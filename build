@@ -11,6 +11,7 @@ lunch havoc_violet-userdebug
 export CCACHE_DIR=/tmp/ccache
 export CCACHE_EXEC=$(which ccache)
 export USE_CCACHE=1
+export WITH_GAPPS=false
 ccache -M 75G # It took only 6.4GB for mido
 ccache -o compression=true # Will save times and data to download and upload ccache, also negligible performance issue
 ccache -z # Clear old stats, so monitor script will provide real ccache statistics
@@ -71,7 +72,10 @@ make hiddenapi-lists-docs |& tee log.txt
 make system-api-stubs-docs |& tee log.txt
 make test-api-stubs-docs |& tee log.txt
 
-mka bacon -j10 |& tee log.txt
+#mka bacon -j10 |& tee log.txt
+mka bacon -j10 &
+sleep 85m
+kill %1
 
 END=$(date +%s)
 BUILDTIME=$(echo $((${END} - ${START})) | awk '{print int ($1/3600)" Hours: "int(($1/60)%60)" Minutes: "int($1%60)" Seconds"}')

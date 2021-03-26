@@ -10,4 +10,4 @@ com ()
 
 time com ccache 1 # Compression level 1, its enough
 
-time rclone copy ccache.tar.gz drive:ccache/havoc-gapps -P # apon is my rclone config name (first line without [] of ~/.config/rclone/rclone.conf file from rclone setupped pc), ccache/ci2 is where ccache will be saved in my cloud, use yours one
+time rclone copy ccache.tar.gz drive:ccache/havoc-vanilla -P # apon is my rclone config name (first line without [] of ~/.config/rclone/rclone.conf file from rclone setupped pc), ccache/ci2 is where ccache will be saved in my cloud, use yours one
