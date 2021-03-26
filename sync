@@ -25,7 +25,6 @@ git clone --depth=1 https://gitlab.com/athul05/vendor_xiaomi_violet.git vendor/x
 git clone --depth=1 https://github.com/SuperiorOS-Devices/android_kernel_xiaomi_violet.git kernel/xiaomi/violet
 
 rm -rf  hardware/qcom-caf/sm8150/{display,media,audio}
-rm -rf vendor/qcom/opensource/power && git clone https://github.com/LineageOS/android_vendor_qcom_opensource_power.git vendor/qcom/opensource/power && cd vendor/qcom/opensource/power && git reset --hard 061c3039f0b5eda112dc7e0fecb02d0265f2e95c && cd -
 cd hardware/qcom-caf/sm8150 && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_display.git display && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_media.git media && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_audio.git audio && cd -
 
 
