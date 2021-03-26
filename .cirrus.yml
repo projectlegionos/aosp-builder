@@ -8,6 +8,15 @@ env: # Environt variable to pass to all tasks
   password: "ENCRYPTED[2cb1a9259052c0ebcbc7a07c11bea34ceaa80894dcab6fc6af7dbf87f747f9e2404257ffd0cae9ad972634f6d7075112]"
   TOKEN: "ENCRYPTED[795a60b56e8029bec0afa2320f0f0b020680d73e1487216365111aca4d8fe2734fdfa2f4802b1d3a7373e4d548e2bf2c]"
 
+  # Regular env variables that i can use for selecting my rom and build-type etc....
+  rom: "havoc"
+  branch: "staging"
+  with_gapps: "true"
+  build_type: "userdebug"
+  zip: "out/target/product/violet/*Official*.zip"
+  make: "mka bacon"
+  gdrivedir: "Havoc"
+
 task:
   name: aosp # Project name
   timeout_in: 120m # Otherwise it will timeout at 60m automatically, 120m highest in free account

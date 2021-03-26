@@ -10,4 +10,12 @@ com ()
 
 time com ccache 1 # Compression level 1, its enough
 
-time rclone copy ccache.tar.gz drive:ccache/havoc-vanilla -P # apon is my rclone config name (first line without [] of ~/.config/rclone/rclone.conf file from rclone setupped pc), ccache/ci2 is where ccache will be saved in my cloud, use yours one
+if [ $rom == "havoc" ];then
+  if [ $with_gapps == "true"  ];then # This is me testing out whether ccache's of vanilla and gapps build vary in build time...May remove this check in future
+    time rclone copy ccache.tar.gz drive:ccache/havoc-gapps -P
+  else
+    time rclone copy ccache.tar.gz drive:ccache/havoc-vanilla -P
+  fi
+else
+  time rclone copy ccache.tar.gz drive:ccache/colt -P
+fi

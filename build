@@ -7,11 +7,17 @@ sudo apt-get install python2 -y
 
 # Normal build steps
 . build/envsetup.sh
-lunch havoc_violet-userdebug 
+lunch "${rom}"_violet-"${build_type}" 
 export CCACHE_DIR=/tmp/ccache
 export CCACHE_EXEC=$(which ccache)
 export USE_CCACHE=1
-export WITH_GAPPS=false
+
+if [ $with_gapps == "true" ];then
+  export WITH_GAPPS=true && export TARGET_GAPPS_ARCH=arm64
+else
+  export WITH_GAPPS=false
+fi
+
 ccache -M 75G # It took only 6.4GB for mido
 ccache -o compression=true # Will save times and data to download and upload ccache, also negligible performance issue
 ccache -z # Clear old stats, so monitor script will provide real ccache statistics
@@ -20,25 +26,17 @@ mkdir -p ~/.config/rclone
 echo "$rclone_config" > ~/.config/rclone/rclone.conf # Write rclone config found from env variable, so that cloud storage can be used to upload ccache
 
 
-# Next 8 lines should be run first to collect ccache and then upload, after doning it 1 or 2 times, our ccache will help to build without these 8 lines
-#make api-stubs-docs || echo no problem, we need ccache
-#make hiddenapi-lists-docs || echo no problem, we need ccache
-#make system-api-stubs-docs || echo no problem we need ccache
-#make test-api-stubs-docs || echo no problem, we need ccache
-#make aex -j10 & # dont remove that '&'
-#sleep 85m
-#kill %1
-#ccache -s
-#and dont use below codes for first 1 or 2 times, to get ccache uploaded,
+# Let's get some bling around here with a telegram ci group post and all ....
 CHATID="-1001180591337"
 BOT_MSG_URL="https://api.telegram.org/bot${TOKEN}/sendMessage"
-BOT_BUILD_URL="https://api.telegram.org/bot${TOKEN}/sendDocument"
+BOT_LOG_URL="https://api.telegram.org/bot${TOKEN}/sendDocument"
+BOT_STICKER_URL="https://api.telegram.org/bot${TOKEN}/sendSticker"
 # Build Machine details
 cores=$(nproc --all)
 os=$(cat /etc/issue)
 time=$(TZ="Asia/Kolkata" date "+%a %b %d %r")
 
-
+# send saxx msgs to tg
 tg_post_msg() {
 	curl -s -X POST "$BOT_MSG_URL" -d chat_id="$CHATID" \
 	-d "disable_web_page_preview=true" \
@@ -47,57 +45,55 @@ tg_post_msg() {
 
 }
 
+# send the error logs to tg
 tg_post_log() {
-
-	curl --progress-bar -F document=@"$1" "$BOT_BUILD_URL" \
+	curl --progress-bar -F document=@"$1" "$BOT_LOG_URL" \
 	-F chat_id="$CHATID"  \
 	-F "disable_web_page_preview=true" \
 	-F "parse_mode=html" \
   -F caption="$2"
 }
 
+# send a nice sticker ro act as a sperator between builds
+tg_post_sticker() {
+    curl -s -X POST "$BOT_STICKER_URL" -d chat_id="$CHATID" \
+        -d sticker="CAACAgUAAxkBAAECHIJgXlYR8K8bYvyYIpHaFTJXYULy4QACtgIAAs328FYI4H9L7GpWgR4E"
+}
 
-# upload function for uploading rom zip file! I don't want unwanted builds in my google drive haha!
 
+START=$(date +%s)
+cilink="https://cirrus-ci.com/github/VIOLET-ANDROID/aosp-builder" # Just for checking build status via tg .. here all task link is given as we can't get exact ci links of each tasks...It izz what it izz
 
+#start off by sending a trigger msg
+tg_post_sticker
+tg_post_msg "<b>Build Triggered ⌛</b>%0A<b>===============</b>%0A<b>Rom : </b><code>$rom</code>%0A<b>Machine : </b><code>$os</code>%0A<b>Cores : </b><code>$cores</code>%0A<b>Time : </b><code>$time</code>%0A<b>CI Link : </b><a href='$cilink'>here</a>"
+
+# Let's compile by parts! Coz of ram issue!
+make api-stubs-docs
+make hiddenapi-lists-docs
+make system-api-stubs-docs
+make test-api-stubs-docs
 
 # Build command! j10 for 10 cpu, j8 for 8 cpu, otherwise memeroy will end up even its 24G
-# Upload rom zip file if succeed to build! Send notification to tg! And send shell to tg if build fails!
-START=$(date +%s)
-# Let's compile by parts! Coz of ram issue!
-tg_post_msg "<b>Havoc Build Triggered</b>%0A<b>===================</b>%0A<b>Machine : </b><code>$os</code>%0A<b>Cores : </b><code>$cores</code>%0A<b>Time : </b><code>$time</code>"
-
-make api-stubs-docs |& tee log.txt
-make hiddenapi-lists-docs |& tee log.txt
-make system-api-stubs-docs |& tee log.txt
-make test-api-stubs-docs |& tee log.txt
-
-#mka bacon -j10 |& tee log.txt
-mka bacon -j10 &
-sleep 85m
-kill %1
+$make -j10 |& tee log.txt
 
 END=$(date +%s)
 BUILDTIME=$(echo $((${END} - ${START})) | awk '{print int ($1/3600)" Hours: "int(($1/60)%60)" Minutes: "int($1%60)" Seconds"}')
 
-check="$(tail -n 2 ./log.txt | grep success)"
-
-if [ -z "$check" ]; then
-  tg_post_msg "<b>Havoc Build Failed.. :( </b>"
+if [ ! -f $zip ]; then # Much better logic than previous
+  tg_post_msg "<b> Build Failed for $rom ❌</b>%0A<b>Wasted Time : </b><code>$BUILDTIME</code>"
   tg_post_log "log.txt" "Full Build Log"
   sed '/FAILED/,$!d' log.txt >>errlog.txt
   tg_post_log "errlog.txt" "Error Log"
 else
-  zip="out/target/product/violet/*Official*.zip"
   size="$(du -h ${zip}|awk '{print $1}')"
 	mdsum="$(md5sum ${zip}|awk '{print $1}')"
   file=$(basename $zip)
-  rclone -P copy $zip drive:builds/Havoc
-  glink="$(rclone link drive:builds/Havoc/${file})"
-  index="https://builds.athuld.workers.dev/0:/Havoc/${file}"
- tg_post_msg "<b>Havoc Build Success :)</b>%0A<b>====================</b>%0A<b>Download Links : </b><a href='$glink'>Gdrive</a>  <a href='$index'>Index</a>%0A<b>Size : </b><code>$size</code>%0A<b>MD5 : </b><code>$mdsum</code>%0A<b>Build Time : </b><code>$BUILDTIME</code>"
+  rclone -P copy $zip drive:Builds/$gdrivedir #fetches the drive link
+  glink="$(rclone link drive:Builds/${gdrivedir}/${file})" 
+  index="https://builds.athuld.workers.dev/0:/${gdrivedir}/${file}" # sets up an index link also
+  # send a saxx msg to tg :)
+  tg_post_msg "<b>Build Success ✅</b>%0A<b>===============</b>%0A<b>File : </b><code>$file</code>%0A<b>Size : </b><code>$size</code>%0A<b>MD5 : </b><code>$mdsum</code>%0A<b>Download Links : </b><a href='$glink'>🔗Gdrive Link</a><b> || </b><a href='$index'>🔗Index Link</a>%0A<b>Build Time : </b><code>$BUILDTIME</code>"
 fi
 
-ccache -s 
-
-
+ccache -s

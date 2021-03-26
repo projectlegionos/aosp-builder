@@ -6,8 +6,17 @@ nproc
 cat /etc/os*
 env
 
-# changed gindex code as the previous had an error 
-url=https://mygdrive.athuld.workers.dev/0:/ccache/havoc-gapps/ccache.tar.gz # Where cccahe is located, use your ones, from where you want to download ccache!
+# Lets setup checks to download each ccache accordingly
+
+if [ $rom == "havoc" ];then
+  if [ $with_gapps == "true"  ];then # This is me testing out whether ccache's of vanilla and gapps build vary in build time...May remove this check in future
+    url=https://mygdrive.athuld.workers.dev/0:/ccache/havoc-gapps/ccache.tar.gz
+  else
+    url=https://mygdrive.athuld.workers.dev/0:/ccache/havoc-vanilla/ccache.tar.gz
+  fi
+else
+  url=https://mygdrive.athuld.workers.dev/0:/ccache/colt/ccache.tar.gz
+fi
 
 cd /tmp # Where to download cccahe
 time aria2c $url -x16 -s50 # Using aria2c for speed haha, ccache will be at /tmp/ccache.tar.gz since my file name is ccache.tar.gz
