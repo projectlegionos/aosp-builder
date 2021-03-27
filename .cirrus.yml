@@ -9,13 +9,13 @@ env: # Environt variable to pass to all tasks
   TOKEN: "ENCRYPTED[795a60b56e8029bec0afa2320f0f0b020680d73e1487216365111aca4d8fe2734fdfa2f4802b1d3a7373e4d548e2bf2c]"
 
   # Regular env variables that i can use for selecting my rom and build-type etc....
-  rom: "colt"
-  branch: "colt"
-  with_gapps: "false"
+  rom: "havoc"
+  branch: "staging"
+  with_gapps: "true"
   build_type: "userdebug"
   zip: "out/target/product/violet/*Official*.zip"
-  make: "make colt"
-  gdrivedir: "Colt"
+  make: "mka bacon"
+  gdrivedir: "Havoc"
 
 task:
   name: aosp # Project name

@@ -26,7 +26,8 @@ git clone https://github.com/athul05/android_device_xiaomi_violet.git -b $branch
 
 git clone --depth=1 https://gitlab.com/athul05/vendor_xiaomi_violet.git vendor/xiaomi/violet
 
-git clone --depth=1 https://github.com/SuperiorOS-Devices/android_kernel_xiaomi_violet.git kernel/xiaomi/violet
+git clone --depth=1 https://github.com/VIOLET-ANDROID/android_kernel_xiaomi_violet.git kernel/xiaomi/violet
+
 
 # Change Default hals
 rm -rf  hardware/qcom-caf/sm8150/{display,media,audio}
