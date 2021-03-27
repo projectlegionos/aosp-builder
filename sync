@@ -32,3 +32,8 @@ git clone --depth=1 https://github.com/SuperiorOS-Devices/android_kernel_xiaomi_
 rm -rf  hardware/qcom-caf/sm8150/{display,media,audio}
 
 cd hardware/qcom-caf/sm8150 && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_display.git display && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_media.git media && git clone https://github.com/PixelExperience/hardware_qcom-caf_sm8150_audio.git audio && cd -
+
+# This is just temporary cuz the power commits are not there in source 
+if [ $rom == "colt" ];then
+  rm -rf vendor/qcom/opensource/power && git clone https://github.com/VIOLET-ANDROID/android_vendor_qcom_opensource_power.git vendor/qcom/opensource/power
+fi
