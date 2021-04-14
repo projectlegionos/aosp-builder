@@ -75,7 +75,7 @@ make system-api-stubs-docs
 make test-api-stubs-docs
 
 # Build command! j10 for 10 cpu, j8 for 8 cpu, otherwise memeroy will end up even its 24G
-$make -j10 |& tee log.txt
+$make -j8 |& tee log.txt
 
 END=$(date +%s)
 BUILDTIME=$(echo $((${END} - ${START})) | awk '{print int ($1/3600)" Hours: "int(($1/60)%60)" Minutes: "int($1%60)" Seconds"}')
