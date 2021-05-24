@@ -83,7 +83,7 @@ BUILDTIME=$(echo $((${END} - ${START})) | awk '{print int ($1/3600)" Hours: "int
 if [ ! -f $zip ]; then # Much better logic than previous
   tg_post_msg "<b> Build Failed for $rom ❌</b>%0A<b>Wasted Time : </b><code>$BUILDTIME</code>"
   tg_post_log "log.txt" "Full Build Log"
-  sed '/FAILED/,$!d' log.txt >>errlog.txt
+  sed '/FAILED/,$!d' log.txt >errlog.txt
   tg_post_log "errlog.txt" "Error Log"
 else
   size="$(du -h ${zip}|awk '{print $1}')"
