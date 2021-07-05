@@ -10,12 +10,8 @@ com ()
 
 time com ccache 1 # Compression level 1, its enough
 
-if [ $rom == "havoc" ];then
-  if [ $with_gapps == "true"  ];then # This is me testing out whether ccache's of vanilla and gapps build vary in build time...May remove this check in future
-    time rclone copy ccache.tar.gz drive:ccache/havoc-gapps -P
-  else
-    time rclone copy ccache.tar.gz drive:ccache/havoc-vanilla -P
-  fi
+if [ $with_gapps == "true"  ];then # This is me testing out whether ccache's of vanilla and gapps build vary in build time...May remove this check in future
+    time rclone copy ccache.tar.gz drive:ccache/legion-gapps -P
 else
-  time rclone copy ccache.tar.gz drive:ccache/colt -P
+    time rclone copy ccache.tar.gz drive:ccache/legion-vanilla -P
 fi
