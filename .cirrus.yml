@@ -4,8 +4,6 @@ env: # Environt variable to pass to all tasks
 
   # For rclone with google drive or any cloud! After first commit pushing, login to https://cirrus-ci.com , click top left corner 3 dot menu, click repository(yourname/aosp-builder) > Repository Settings > Secured Variables > enter content of ~/.config/rclone/rclone.conf (from pc where you setup rclone) > ENCRYPT, copy that ENCRYPTED hash
   # ENCRYPTED variables is unique for every repository, so you cant use my one, create you rclone config https://rclone.org/drive/#making-your-own-client-id
-  rclone_config: "ENCRYPTED[58905adc0bf8e2993c0f327d687a3ba40008ff9e15576c77193774795739ae6a1afcc62d6f109b88b0e0e568bd590fdf]"
-  TOKEN: "ENCRYPTED[ab744d3b18f6ef816d3b9ff817fde7aebf24c9a0ddd6b17a791f1255c7cc59f29e6b33ba4b56a7936ffab23da3eecde4]"
 
   # Regular env variables that i can use for selecting my rom and build-type etc....
   rom: "legion"
